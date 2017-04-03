@@ -64,7 +64,7 @@ function panobtt_custom_settings() {
   }
   add_settings_section( 'panobtt-buton-section', 'Butonul Back to Top', 'panobtt_setari_callback', 'panobtt_options' );
   add_settings_section( 'panobtt-customcss-section', 'Custom CSS', 'panobtt_custom_css_callback', 'panobtt_options' );
-  add_settings_section( 'panobtt-cookie-section', 'Consent Cookie', 'panobtt_cookie_callback', 'panobtt_options' );
+  add_settings_section( 'panobtt-cookie-section', 'Cookie Consent', 'panobtt_cookie_callback', 'panobtt_options' );
   add_settings_field( 'panobtt-buton-checkbox', 'Vizibil?', 'panobtt_buton_checkbox_callback', 'panobtt_options', 'panobtt-buton-section' );
   add_settings_field( 'panobtt-buton-culoare', 'Alegeti culoarea', 'panobtt_buton_culoare_callback', 'panobtt_options', 'panobtt-buton-section' );
   add_settings_field( 'panobtt-custom-css-checkbox', 'Activati Custom CSS?', 'panobtt_custom_css_checkbox_callback', 'panobtt_options', 'panobtt-customcss-section' );
@@ -72,10 +72,10 @@ function panobtt_custom_settings() {
   if ( $option == 'on' ) {
     add_settings_field( 'panobtt-custom-css-field', 'Custom CSS:', 'panobtt_custom_css_field_callback', 'panobtt_options', 'panobtt-customcss-section' );
   }
-  add_settings_field( 'panobtt-cookie-checkbox', 'Activati Consent Cookie?', 'panobtt_cookie_checkbox_callback', 'panobtt_options', 'panobtt-cookie-section' );
+  add_settings_field( 'panobtt-cookie-checkbox', 'Activati Cookie Consent?', 'panobtt_cookie_checkbox_callback', 'panobtt_options', 'panobtt-cookie-section' );
   $option = get_option( 'cookie_activ' );
   if ( $option == 'on' ) {
-    add_settings_field( 'panobtt-cookie-field', 'Consent Cookie Text:', 'panobtt_cookie_field_callback', 'panobtt_options', 'panobtt-cookie-section' );
+    add_settings_field( 'panobtt-cookie-field', 'Cookie Consent Text:', 'panobtt_cookie_field_callback', 'panobtt_options', 'panobtt-cookie-section' );
   }
 }
 
