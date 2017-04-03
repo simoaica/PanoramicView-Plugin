@@ -10,3 +10,37 @@ display: none;
 }
 
 .sageata svg:hover {opacity: 1}
+
+#cookie-div {
+  position: fixed;
+  bottom: 0;
+  z-index: 999;
+  color: #FFF;
+  text-align: center;
+  background-color: rgba(0,0,0,.6);
+  width: 100%;
+  font-size: 80%;
+}
+
+#cookie-div p{
+  margin: 0;
+  padding: 10px 20px;
+}
+
+#cookie-span{
+  padding: 0 20px;
+  cursor: pointer;
+}
+
+#cookie-span:hover::after {
+  content: ' - Close';
+}
+
+@media screen and (max-width: 800px) {
+  #cookie-div {
+    font-size: 50%;
+  }
+  #cookie-span {
+    font-size: 150%;
+  }
+}

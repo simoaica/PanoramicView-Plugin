@@ -1,11 +1,11 @@
 <?php
 /**
-* Plugin Name: PanoramicView Back to Top & Custom CSS
+* Plugin Name: PanoramicView Plugin
 * Plugin URI: http://www.panoramicview.ro
-* Description: Un plugin care afiseaza un buton <strong>Back to Top</strong> pentru revenirea in partea de sus a paginii, precum si posibilitatea de a avea <strong>Custom CSS</strong>.
+* Description: Un plugin care afiseaza un buton <strong>Back to Top</strong> pentru revenirea in partea de sus a paginii, posibilitatea de a avea <strong>Custom CSS</strong> si <strong>Cookie Consent.</strong>
 * Author:  Dan Simoaica
 * Author URI: http://www.simoaica.ro
-* Version: 2.0
+* Version: 3.0
 * License: GPLv2
 */
 
@@ -34,7 +34,9 @@ if ( is_admin() ) {
     delete_option( 'buton_activ' );
     delete_option( 'culoare_buton' );
     delete_option( 'css_activ' );
+    delete_option( 'cookie_activ' );
     delete_option( 'custom_css' );
+    delete_option( 'cookie_text' );
   }
   register_uninstall_hook( __FILE__, 'panobtt_uninstall' );
 }
@@ -51,19 +53,35 @@ function panobtt_custom_settings() {
   register_setting( 'panobtt-settings-group', 'buton_activ' );
   register_setting( 'panobtt-settings-group', 'culoare_buton' );
   register_setting( 'panobtt-settings-group', 'css_activ' );
+  register_setting( 'panobtt-settings-group', 'cookie_activ' );
+  $option = get_option( 'cookie_activ' );
+  if ( $option == 'on' ) {
+    register_setting( 'panobtt-settings-group', 'cookie_text', 'panobtt_sanitize_cookie_text' );
+  }
   $option = get_option( 'css_activ' );
   if ( $option == 'on' ) {
     register_setting( 'panobtt-settings-group', 'custom_css', 'panobtt_sanitize_custom_css' );
   }
   add_settings_section( 'panobtt-buton-section', 'Butonul Back to Top', 'panobtt_setari_callback', 'panobtt_options' );
   add_settings_section( 'panobtt-customcss-section', 'Custom CSS', 'panobtt_custom_css_callback', 'panobtt_options' );
+  add_settings_section( 'panobtt-cookie-section', 'Consent Cookie', 'panobtt_cookie_callback', 'panobtt_options' );
   add_settings_field( 'panobtt-buton-checkbox', 'Vizibil?', 'panobtt_buton_checkbox_callback', 'panobtt_options', 'panobtt-buton-section' );
   add_settings_field( 'panobtt-buton-culoare', 'Alegeti culoarea', 'panobtt_buton_culoare_callback', 'panobtt_options', 'panobtt-buton-section' );
   add_settings_field( 'panobtt-custom-css-checkbox', 'Activati Custom CSS?', 'panobtt_custom_css_checkbox_callback', 'panobtt_options', 'panobtt-customcss-section' );
   $option = get_option( 'css_activ' );
   if ( $option == 'on' ) {
-    add_settings_field( 'panobtt-custom-css-field', 'Custom CSS', 'panobtt_custom_css_field_callback', 'panobtt_options', 'panobtt-customcss-section' );
+    add_settings_field( 'panobtt-custom-css-field', 'Custom CSS:', 'panobtt_custom_css_field_callback', 'panobtt_options', 'panobtt-customcss-section' );
   }
+  add_settings_field( 'panobtt-cookie-checkbox', 'Activati Consent Cookie?', 'panobtt_cookie_checkbox_callback', 'panobtt_options', 'panobtt-cookie-section' );
+  $option = get_option( 'cookie_activ' );
+  if ( $option == 'on' ) {
+    add_settings_field( 'panobtt-cookie-field', 'Consent Cookie Text:', 'panobtt_cookie_field_callback', 'panobtt_options', 'panobtt-cookie-section' );
+  }
+}
+
+function panobtt_sanitize_cookie_text( $input ) {
+  $output = esc_textarea( $input );
+  return $output;
 }
 
 function panobtt_sanitize_custom_css( $input ) {
@@ -90,6 +108,12 @@ function panobtt_custom_css_field_callback() {
   echo '<div id="customCss">'. $css .'</div><textarea id="custom_css" name="custom_css" style="display:none;visibility:hidden;">'. $css .'</textarea>';
 }
 
+function panobtt_cookie_field_callback() {
+  $cookie_text = get_option( 'cookie_text' );
+  $cookie_text = ( empty($cookie_text) ? 'Acest site foloseste cookies. Continuarea navigarii pe acest site se considera acceptare a politicii de utilizare a cookies.' : $cookie_text );
+  echo '<textarea id="cookie_text" name="cookie_text" style="width: 500px;">'. $cookie_text .'</textarea>';
+}
+
 function panobtt_custom_css_checkbox_callback() {
   $option = get_option( 'css_activ' );
   $checked = (@$option =='on' ? 'checked' : '' );
@@ -100,6 +124,12 @@ function panobtt_buton_checkbox_callback() {
   $option = get_option( 'buton_activ' );
   $checked = (@$option =='on' ? 'checked' : '' );
   echo '<input type="checkbox"  name="buton_activ" '. $checked .' /><br/>';
+}
+
+function panobtt_cookie_checkbox_callback() {
+  $option = get_option( 'cookie_activ' );
+  $checked = (@$option =='on' ? 'checked' : '' );
+  echo '<input type="checkbox"  name="cookie_activ" '. $checked .' /><br/>';
 }
 
 function panobtt_buton_culoare_callback() {
@@ -125,6 +155,9 @@ function panobtt_culoare() {
 
 }
 
+function panobtt_cookie_callback() {
+
+}
 
 /*
 ================================
@@ -176,7 +209,14 @@ function panobtt_frontend() {
   }
 }
 
+function panobtt_frontend_cookie() {
+  if (( ! is_admin() ) && ( get_option( 'cookie_activ' ) == 'on')) {
+      add_action( 'wp_footer', 'panobtt_add_cookie_div');
+  }
+}
+
 add_action( 'init', 'panobtt_frontend' );
+add_action( 'init', 'panobtt_frontend_cookie' );
 
 function panobtt_script_enqueue() {
   wp_enqueue_script( 'panobtt-custom' , plugin_dir_url( __FILE__ ) . 'panobtt.js', array( 'jquery' ), '1.0.0', true );
@@ -198,5 +238,17 @@ function panobtt_add_sageata(){
         </svg>
       </div>
       <?php
+}
+
+function panobtt_add_cookie_div(){
+  $cuchi= $_COOKIE['cuchi'];
+  if(!isset($cuchi)) {
+    $cookie_text = esc_attr( get_option( 'cookie_text' ));
+    ?>
+    <div id="cookie-div">
+      <p><?php echo $cookie_text; ?><span id="cookie-span">X</span></p>
+    </div>
+    <?php
+  }
 }
 }
