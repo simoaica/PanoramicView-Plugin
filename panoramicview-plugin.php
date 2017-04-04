@@ -106,6 +106,7 @@ function panobtt_custom_css_field_callback() {
   $css = get_option( 'custom_css' );
   $css = ( empty($css) ? '/* PanoramicView Custom CSS */' : $css );
   echo '<div id="customCss">'. $css .'</div><textarea id="custom_css" name="custom_css" style="display:none;visibility:hidden;">'. $css .'</textarea>';
+  echo '<br><button id="incarca-customCSS" class="button button-secondary">Incarca Custom CSS de pe harddisk</button>';
 }
 
 function panobtt_cookie_field_callback() {

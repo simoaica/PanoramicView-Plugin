@@ -1,4 +1,4 @@
-<h1>PanoramicView  Back to Top, Custom CSS & Cookie Consent.</h1>
+<h1 id="my-admin-message">PanoramicView  Back to Top, Custom CSS & Cookie Consent.</h1>
 <?php settings_errors(); ?>
 <br/>
 <form id="save-panobtt-form" action="options.php" method="post">
