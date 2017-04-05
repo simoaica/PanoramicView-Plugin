@@ -5,7 +5,7 @@
 * Description: Un plugin care afiseaza un buton <strong>Back to Top</strong> pentru revenirea in partea de sus a paginii, posibilitatea de a avea <strong>Custom CSS</strong> si <strong>Cookie Consent.</strong>
 * Author:  Dan Simoaica
 * Author URI: http://www.simoaica.ro
-* Version: 3.1
+* Version: 3.2
 * License: GPLv2
 */
 
@@ -34,9 +34,10 @@ if ( is_admin() ) {
     delete_option( 'buton_activ' );
     delete_option( 'culoare_buton' );
     delete_option( 'css_activ' );
-    delete_option( 'cookie_activ' );
     delete_option( 'custom_css' );
+    delete_option( 'cookie_activ' );
     delete_option( 'cookie_text' );
+    delete_option( 'cookie_id' );
   }
   register_uninstall_hook( __FILE__, 'panobtt_uninstall' );
 }
@@ -57,6 +58,7 @@ function panobtt_custom_settings() {
   $option = get_option( 'cookie_activ' );
   if ( $option == 'on' ) {
     register_setting( 'panobtt-settings-group', 'cookie_text', 'panobtt_sanitize_cookie_text' );
+    register_setting( 'panobtt-settings-group', 'cookie_id', 'panobtt_sanitize_cookie_id' );
   }
   $option = get_option( 'css_activ' );
   if ( $option == 'on' ) {
@@ -76,7 +78,13 @@ function panobtt_custom_settings() {
   $option = get_option( 'cookie_activ' );
   if ( $option == 'on' ) {
     add_settings_field( 'panobtt-cookie-field', 'Cookie Consent Text:', 'panobtt_cookie_field_callback', 'panobtt_options', 'panobtt-cookie-section' );
+    add_settings_field( 'panobtt-cookie-field1', 'Pagina cu detalii despre cookie:', 'panobtt_cookie_field1_callback', 'panobtt_options', 'panobtt-cookie-section' );
   }
+}
+
+function panobtt_sanitize_cookie_id( $input ) {
+  $output = esc_attr( $input );
+  return $output;
 }
 
 function panobtt_sanitize_cookie_text( $input ) {
@@ -110,9 +118,26 @@ function panobtt_custom_css_field_callback() {
 }
 
 function panobtt_cookie_field_callback() {
-  $cookie_text = get_option( 'cookie_text' );
+  $cookie_text = esc_attr( get_option( 'cookie_text' ) );
   $cookie_text = ( empty($cookie_text) ? 'Acest site foloseste cookies. Continuarea navigarii pe acest site se considera acceptare a politicii de utilizare a cookies.' : $cookie_text );
   echo '<textarea id="cookie_text" name="cookie_text" style="width: 500px;">'. $cookie_text .'</textarea>';
+}
+
+function panobtt_cookie_field1_callback() {
+  $cookie_id = esc_attr( get_option( 'cookie_id' ) );
+  $args = array(
+    'depth'                 => 0,
+    'child_of'              => 0,
+    'selected'              => $cookie_id,
+    'echo'                  => 1,
+    'name'                  => 'cookie_id',
+    'id'                    => null, // string
+    'class'                 => null, // string
+    'show_option_none'      => 'Alege pagina de link', // string
+    'show_option_no_change' => null, // string
+    'option_none_value'     => null, // string
+  );
+  wp_dropdown_pages( $args );
 }
 
 function panobtt_custom_css_checkbox_callback() {
@@ -244,10 +269,12 @@ function panobtt_add_sageata(){
 function panobtt_add_cookie_div(){
   $cuchi= $_COOKIE['cuchi'];
   if(!isset($cuchi)) {
+    $cookie_id = esc_attr( get_option( 'cookie_id' ) );
+    $cookie_url = esc_url( get_permalink( $cookie_id ) );
     $cookie_text = esc_attr( get_option( 'cookie_text' ));
     ?>
     <div id="cookie-div">
-      <p><?php echo $cookie_text; ?><span id="cookie-span">X</span></p>
+      <p><?php echo $cookie_text; ?><?php echo ( $cookie_id )? '<a href="'. $cookie_url .'">Detalii despre politica cookie aici</a>' : '' ?><span id="cookie-span">X</span></p>
     </div>
     <?php
   }

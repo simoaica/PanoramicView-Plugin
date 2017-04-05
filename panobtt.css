@@ -36,6 +36,19 @@ display: none;
   content: ' - Close';
 }
 
+#cookie-div > p > a {
+  color: orange;
+  margin-left: 20px;
+}
+
+#cookie-div > p > a:hover {
+  color:#FFF;
+}
+
+#cookie-div > p > a:focus {
+  outline: none;
+}
+
 @media screen and (max-width: 800px) {
   #cookie-div {
     font-size: 50%;
