@@ -5,7 +5,7 @@
 * Description: Un plugin care afiseaza un buton <strong>Back to Top</strong> pentru revenirea in partea de sus a paginii, posibilitatea de a avea <strong>Custom CSS</strong> si <strong>Cookie Consent.</strong>
 * Author:  Dan Simoaica
 * Author URI: http://www.simoaica.ro
-* Version: 3.0
+* Version: 3.1
 * License: GPLv2
 */
 
